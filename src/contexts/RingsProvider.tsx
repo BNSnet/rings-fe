@@ -4,7 +4,6 @@ import web3 from "web3";
 
 import init, { Client, Peer, UnsignedInfo, MessageCallbackInstance, debug } from '@ringsnetwork/rings-node'
 
-import useBNS from '../hooks/useBNS';
 import formatAddress from '../utils/formatAddress';
 export interface Chat_props {
   from: string,
@@ -38,7 +37,6 @@ interface PeerMapProps {
     state: string | undefined,
     transport_id: string,
     name: string,
-    bns: string,
     ens: string,
   }
 }
@@ -111,7 +109,6 @@ const reducer = (state: StateProps, { type, payload }: { type: string, payload: 
               ...rest,
               address: _address,
               name: formatAddress(_address),
-              bns: '',
               ens: '',
             }
 
@@ -182,14 +179,13 @@ const reducer = (state: StateProps, { type, payload }: { type: string, payload: 
           }
         },
       }
-    default: 
+    default:
       return state
   }
 }
 
 const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { account, provider } = useWeb3React()
-  const { getBNS } = useBNS()
 
   const [turnUrl, setTurnUrl] = useState('')
   const [nodeUrl, setNodeUrl] = useState('')
@@ -199,7 +195,7 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [client, setClient] = useState<Client | null>(null)
   const [wasm, setWasm] = useState<any>(null)
 
-  const [state, dispatch] = useReducer(reducer, { peerMap: {}, chatMap: {}, activePeers: [], activePeer: '' }) 
+  const [state, dispatch] = useReducer(reducer, { peerMap: {}, chatMap: {}, activePeers: [], activePeer: '' })
 
   const fetchPeers = useCallback(async () => {
     if (client && status === 'connected') {
@@ -225,22 +221,9 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     }
   }, [provider])
 
-  const resolveBNS = useCallback(async (peers: string[]) => {
-    if (getBNS) {
-      peers.forEach(async (peer) => {
-        const bns = await getBNS(peer)
-
-        if (bns) {
-          dispatch({ type: CHANGE_NAME, payload: { peer, key: 'bns', name: bns } })
-        }
-      })
-    }
-  }, [getBNS])
-
   useEffect(() => {
-    resolveBNS(Object.keys(state).filter((address) => state.peerMap[address] && !state.peerMap[address].bns))
     resolveENS(Object.keys(state).filter((address) => state.peerMap[address] && !state.peerMap[address].ens))
-  }, [state, resolveENS, resolveBNS])
+  }, [state, resolveENS])
 
   const startChat = useCallback((address: string) => {
     if (address) {
@@ -347,9 +330,9 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const initClient = useCallback(async() => {
     if (account && provider && wasm && turnUrl && nodeUrl) {
-      debug(process.env.NODE_ENV !== 'development') 
+      debug(process.env.NODE_ENV !== 'development')
       setStatus('connecting')
-      
+
       const unsignedInfo = new UnsignedInfo(account);
       // @ts-ignore
       const signer = provider.getSigner(account);
@@ -387,7 +370,7 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       await client.listen(callback)
 
-      const promises = nodeUrl.split(';').map(async (url: string) => 
+      const promises = nodeUrl.split(';').map(async (url: string) =>
         await client.connect_peer_via_http(nodeUrl)
       )
 

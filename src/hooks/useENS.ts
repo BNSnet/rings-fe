@@ -3,24 +3,10 @@ import { useWeb3React } from '@web3-react/core'
 
 import formatAddress from '../utils/formatAddress'
 
-import useBNS from './useBNS'
-
 const useENS = () => {
   const { provider, account } = useWeb3React()
-  const { getBNS } = useBNS()
 
   const [name, setName] = useState('')
-  const [bns, setBNS] = useState<string>('')
-
-  const resolveBns = useCallback(async () => {
-    if (account) {
-      const name = await getBNS(account)
-
-      if (name) {
-        setBNS(name)
-      }
-    }
-  }, [account, getBNS])
 
   const resolveName = useCallback(async () => {
     if (provider && account) {
@@ -39,12 +25,11 @@ const useENS = () => {
   useEffect(() => {
     if (account) {
       setName(formatAddress(account))
-      resolveBns()
       resolveName()
     }
-  }, [account, resolveName, resolveBns])
+  }, [account, resolveName])
 
-  return bns || name
+  return name
 }
 
 export default useENS

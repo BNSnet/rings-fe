@@ -2,14 +2,12 @@ import { useEffect, useState, useRef, useCallback, useReducer } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
-import useBNS from './useBNS'
 import formatAddress from '../utils/formatAddress'
 interface OnlinerMapProps {
   [key: string]: {
     address: string,
     name: string,
     ens: string,
-    bns: string,
     status: string
   },
 }
@@ -25,7 +23,6 @@ const reducer = (state: OnlinerMapProps, { type, payload }: { type: string, payl
           peer,
           name: formatAddress(peer),
           ens: '',
-          bns: '',
           status: '',
         }
       }
@@ -46,7 +43,6 @@ const reducer = (state: OnlinerMapProps, { type, payload }: { type: string, payl
             address,
             name: formatAddress(address),
             ens: '',
-            bns: '',
             status: '',
           }
         }
@@ -76,7 +72,6 @@ const useWebsocket = () => {
   const didUnmount = useRef(false)
 
   const { account, provider } = useWeb3React()
-  const { getBNS } = useBNS()
   const [socketUrl, setSocketUrl] = useState('wss://api-did-dev.ringsnetwork.io/ws');
 
   const [onliners, setOnliners] = useState<string[]>([])
@@ -93,17 +88,6 @@ const useWebsocket = () => {
     }
   );
 
-  const resolveBNS = useCallback(async (peers: string[]) => {
-    if (getBNS) {
-      peers.forEach(async (address) => {
-        const bns = await getBNS(address)
-
-        if (bns) {
-          dispatch({ type: 'changeName', payload: { peer: address, key: 'bns', name: bns } })
-        }
-      })
-    }
-  }, [getBNS])
 
   const resolveENS = useCallback(async (peers: string[]) => {
     if (provider) {
@@ -122,9 +106,8 @@ const useWebsocket = () => {
   }, [provider])
 
   useEffect(() => {
-    resolveBNS(Object.keys(state).filter((address) => state[address] && !state[address].bns))
     resolveENS(Object.keys(state).filter((address) => state[address] && !state[address].ens))
-  }, [resolveENS, resolveBNS, state])
+  }, [resolveENS, state])
 
   const sendMessage = useCallback((status: 'join' | 'leave') => {
     console.group(`change status`)
