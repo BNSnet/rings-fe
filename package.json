@@ -14,9 +14,8 @@
     "@emotion/styled": "^11.9.3",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
     "@ringsnetwork/rings-node": "https://github.com/RingsNetwork/rings/releases/download/v0.6.1/rings-v0.6.1-wasm32-unknown-unknown.tgz",
-    "@serwist/next": "^9.0.0",
     "@walletconnect/ethereum-provider": "^1.7.7",
-    "@web3-react/core": "8.0.23-beta.0",
+    "@web3-react/core": "8.2.3",
     "@web3-react/metamask": "8.0.19-beta.0",
     "@web3-react/network": "8.0.18-beta.0",
     "@web3-react/types": "8.0.12-beta.0",
@@ -27,9 +26,9 @@
     "fecha": "^4.2.2",
     "framer-motion": "^6.4.2",
     "next": "14.1.0",
-    "react": "^18",
+    "react": "18",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-dom": "^18",
+    "react-dom": "18",
     "react-icons": "^4.4.0",
     "react-use-websocket": "^4.2.0",
     "styled-components": "^5.3.5",
@@ -41,9 +40,10 @@
     "@types/react-copy-to-clipboard": "^5.0.2",
     "@types/react-dom": "^18",
     "@types/styled-components": "^5.1.25",
-    "eslint": "8.13.0",
-    "eslint-config-next": "12.1.5",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0",
     "sass": "^1.50.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.91.0"
   }
 }

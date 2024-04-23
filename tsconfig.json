@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "types": [
-      "@serwist/next/typings"
-    ],
     "lib": [
       "dom",
       "dom.iterable",
@@ -29,7 +26,8 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "next-env.d.ts",

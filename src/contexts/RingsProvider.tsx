@@ -1,9 +1,18 @@
+"use client"
+
 import { useEffect, useState, useCallback, createContext, useContext, useReducer } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import web3 from "web3";
 
-import init, { Client, Peer, UnsignedInfo, MessageCallbackInstance, debug } from '@ringsnetwork/rings-node'
+import init, {
+  Provider,
+  BackendBehaviour,
+  debug,
+  rings_node
+} from '@ringsnetwork/rings-node'
 
+/* import init, { Client, Peer, UnsignedInfo, MessageCallbackInstance, debug } from '@ringsnetwork/rings-node'
+ *  */
 import formatAddress from '../utils/formatAddress';
 export interface Chat_props {
   from: string,

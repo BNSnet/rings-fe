@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useWeb3React } from '@web3-react/core'
 
@@ -8,15 +9,15 @@ import getConfig from 'next/config'
 
 import { format } from 'fecha'
 
-import { 
-  Box, 
-  Button, 
-  Flex, 
-  Input, 
-  Tabs, 
-  TabList, 
-  Tab, 
-  Center, 
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  Tabs,
+  TabList,
+  Tab,
+  Center,
   Tooltip,
   useColorMode,
   Image
@@ -48,7 +49,7 @@ const Home: NextPage = () => {
   const { sendMessage: changeStatus, state: onlinerMap, dispatch: onlinerDispatch } = useWebsocket()
   const accountName = useENS()
 
-  const { colorMode } = useColorMode() 
+  const { colorMode } = useColorMode()
 
   const [message, setMessage] = useState<string>('')
 
@@ -75,7 +76,7 @@ const Home: NextPage = () => {
     } else if (type === "compositionend") {
       setInputing(false)
       setMessage(value)
-    }  
+    }
   }, [])
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +84,7 @@ const Home: NextPage = () => {
       setMessage(e.target.value)
     }
   }, [inputing])
-  
+
   const handleSendMessage = useCallback(async () => {
     if (sending || !message || !ringsState.activePeer) {
       return false
@@ -114,7 +115,7 @@ const Home: NextPage = () => {
 
   const handleConnectByAddress = useCallback(async (address: string) => {
     if (
-      !address || 
+      !address ||
       onlinerMap[address]?.status === 'connecting' ||
       address.toLowerCase() === account?.toLowerCase()
     ) {
@@ -125,7 +126,7 @@ const Home: NextPage = () => {
       onlinerDispatch({ type: 'changeStatus', payload: { peer: address, status: 'connecting' }})
 
       await connectByAddress(address)
-     
+
       onlinerDispatch({ type: 'changeStatus', payload: { peer: address, status: 'connected' }})
     } catch (e) {
       console.error(e)
@@ -142,12 +143,12 @@ const Home: NextPage = () => {
 
   const renderLeft = () => {
     return (
-      <Card 
+      <Card
         width={{
           base: '100%',
           sm: '260px'
-        }} 
-        p="15px" 
+        }}
+        p="15px"
         height={{
           base: "auto",
           sm: "100%",
@@ -170,7 +171,7 @@ const Home: NextPage = () => {
                           display={{
                             base: 'block',
                             sm: 'none'
-                          }} 
+                          }}
                           mr="10px"
                         >
                           <ThemeToogle />
@@ -193,7 +194,7 @@ const Home: NextPage = () => {
                       </Box>
                     </Box>
                   </>
-                ) : 
+                ) :
                 <Flex justifyContent={{
                   base: 'space-between',
                   sm: 'space-around',
@@ -204,7 +205,7 @@ const Home: NextPage = () => {
                     display={{
                       base: 'flex',
                       sm: 'none'
-                    }} 
+                    }}
                   >
                     <ThemeToogle />
                   </Center>
@@ -228,24 +229,24 @@ const Home: NextPage = () => {
                       </Box> :
                       null
                     }
-                  </Flex> 
+                  </Flex>
 
                   <Box>
                     {
-                      Object.keys(onlinerMap).map((peer) => 
-                        <Flex 
-                          mb="20px" 
-                          cursor={ peer.toLowerCase() !== account.toLowerCase() ? 'pointer' : 'default' } 
-                          justifyContent="space-between" 
-                          alignItems="center" 
-                          key={peer} 
+                      Object.keys(onlinerMap).map((peer) =>
+                        <Flex
+                          mb="20px"
+                          cursor={ peer.toLowerCase() !== account.toLowerCase() ? 'pointer' : 'default' }
+                          justifyContent="space-between"
+                          alignItems="center"
+                          key={peer}
                           onClick={() => handleConnectByAddress(peer)}
                         >
                           {
                             peer.toLowerCase() === account.toLowerCase() ?
                             <>
                               <Box>{onlinerMap[peer]?.bns || ringsState.peerMap[peer]?.bns || onlinerMap[peer]?.ens || ringsState.peerMap[peer]?.name || onlinerMap[peer].name}</Box>
-                              <Box>You</Box> 
+                              <Box>You</Box>
                             </> :
                             <>
                               <Tooltip label="add to contacts">
@@ -270,12 +271,12 @@ const Home: NextPage = () => {
                   <Box>
                       {
                         Object.keys(ringsState.peerMap).map((peer) => (
-                          <Flex 
-                            mb="20px" 
+                          <Flex
+                            mb="20px"
                             cursor="pointer"
-                            justifyContent="space-between" 
-                            alignItems="center" 
-                            key={peer} 
+                            justifyContent="space-between"
+                            alignItems="center"
+                            key={peer}
                             onClick={() => {
                               startChat(peer)
                               setSending(false)
@@ -283,11 +284,11 @@ const Home: NextPage = () => {
                           }}>
                             <Box>
                               {
-                                onlinerMap[peer]?.bns || 
-                                ringsState.peerMap[peer]?.bns || 
-                                onlinerMap[peer]?.ens || 
-                                ringsState.peerMap[peer]?.ens || 
-                                onlinerMap[peer]?.name || 
+                                onlinerMap[peer]?.bns ||
+                                ringsState.peerMap[peer]?.bns ||
+                                onlinerMap[peer]?.ens ||
+                                ringsState.peerMap[peer]?.ens ||
+                                onlinerMap[peer]?.name ||
                                 ringsState.peerMap[peer]?.name
                               }
                             </Box>
@@ -295,15 +296,15 @@ const Home: NextPage = () => {
                               <Box m="0 5px 0 10px">{ringsState.peerMap[peer].state}</Box>
                               {
                                 ringsState.chatMap[peer]?.status === 'unread' ?
-                                <Box w="6px" h="6px" borderRadius="50%" bg="red"></Box> : 
-                                <Box w="6px" h="6px" borderRadius="50%" bg="transparent"></Box> 
+                                <Box w="6px" h="6px" borderRadius="50%" bg="red"></Box> :
+                                <Box w="6px" h="6px" borderRadius="50%" bg="transparent"></Box>
                               }
                             </Flex>
                           </Flex>
                         ))
                       }
                   </Box>
-                </Box>: 
+                </Box>:
                 null
               }
             </Box>
@@ -348,7 +349,7 @@ const Home: NextPage = () => {
       return (
         <TabList>{hds}</TabList>
       )
-    } 
+    }
 
     const renderMessages = () => {
       let messages: Array<React.ReactNode> = []
@@ -356,17 +357,17 @@ const Home: NextPage = () => {
       if (ringsState.activePeer && ringsState.chatMap[ringsState.activePeer]) {
         messages = ringsState.chatMap[ringsState.activePeer].messages.map(({ message, from }, i) => {
           return (
-            <Box 
+            <Box
               key={`${message}-${i}`}
               mb="20px"
             >
               <Flex alignItems="center">
                 <Box color={ from.toLowerCase() === account?.toLowerCase() ? "#15CD96" : '#757d8a'} mr="10px">
-                  { 
+                  {
                     from.toLowerCase() === account?.toLowerCase() ?
                     accountName:
-                    ringsState.peerMap[from.toLowerCase()]?.bns || ringsState.peerMap[from.toLowerCase()]?.ens || ringsState.peerMap[from.toLowerCase()]?.name 
-                  } &gt; 
+                    ringsState.peerMap[from.toLowerCase()]?.bns || ringsState.peerMap[from.toLowerCase()]?.ens || ringsState.peerMap[from.toLowerCase()]?.name
+                  } &gt;
                 </Box>
                 <Box>{message}</Box>
               </Flex>
@@ -383,13 +384,13 @@ const Home: NextPage = () => {
     return (
       <Card p="10px" height="100%" flexGrow="1" m={{
         base: '10px 0',
-        sm: "0 10px", 
+        sm: "0 10px",
       }}>
         <Flex height="100%" justifyContent="space-between" flexDirection="column">
           <Box>
-            <Tabs 
-              variant='enclosed' 
-              index={ ringsState.activePeers.findIndex(key => key === ringsState.activePeer) } 
+            <Tabs
+              variant='enclosed'
+              index={ ringsState.activePeers.findIndex(key => key === ringsState.activePeer) }
               onChange={(index) => {
                 startChat(ringsState.activePeers[index])
               }}
@@ -402,33 +403,33 @@ const Home: NextPage = () => {
             <Box w="100%" h="50px" ref={messagesRef} />
           </Card>
           <Flex>
-            <Input 
+            <Input
               ref={inputRef}
               disabled={
-                !account || 
+                !account ||
                 !ringsState.activePeer ||
-                ringsState.peerMap[ringsState.activePeer]?.state !== 'connected' 
+                ringsState.peerMap[ringsState.activePeer]?.state !== 'connected'
               }
-              fontSize={10} 
-              mr="15px" 
-              type="text" 
-              placeholder='Type message' 
-              // value={message} 
-              onChange={handleInputChange} 
-              onKeyDown={handleKeyDown} 
+              fontSize={10}
+              mr="15px"
+              type="text"
+              placeholder='Type message'
+              // value={message}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               // @ts-ignore
               onCompositionStart={handleComposition}
               // @ts-ignore
               onCompositionEnd={handleComposition}
             />
-            <Button 
+            <Button
               disabled={
-                !account || 
-                !ringsState.activePeer || 
-                ringsState.peerMap[ringsState.activePeer]?.state !== 'connected' || 
+                !account ||
+                !ringsState.activePeer ||
+                ringsState.peerMap[ringsState.activePeer]?.state !== 'connected' ||
                 !message
-              } 
-              isLoading={sending} 
+              }
+              isLoading={sending}
               onClick={handleSendMessage}
             >
               Send
@@ -440,11 +441,11 @@ const Home: NextPage = () => {
   }
   const renderRight = () => {
     return (
-      <Box 
+      <Box
         width={{
           base: '100%',
           sm: "240px",
-        }} 
+        }}
         height={{
           base: 'auto',
           sm: "100%",
@@ -491,10 +492,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <Flex 
+      <Flex
         justifyContent={{
           base: "space-between"
-        }} 
+        }}
         flexDir={{
           base: 'column',
           sm: 'row'

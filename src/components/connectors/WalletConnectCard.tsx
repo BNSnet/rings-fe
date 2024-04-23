@@ -2,7 +2,7 @@ import { Image } from '@chakra-ui/react'
 
 import { hooks, walletConnect } from '../../connectors/walletConnect'
 import { ConnectWithSelect } from '../ConnectWithSelect'
-
+console.log(hooks)
 const {
   useChainId,
   useAccounts,
