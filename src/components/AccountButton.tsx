@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
-import { 
-  Box, 
-  Button, 
+import {
+  Box,
+  Button,
   Text,
   Modal,
   ModalOverlay,
@@ -14,7 +14,6 @@ import {
   Center,
 } from '@chakra-ui/react'
 
-import WalletConnectCard from './connectors/WalletConnectCard'
 import MetaMaskCard from './connectors/MetaMaskCard'
 
 const AccountButton: React.FC = () => {
@@ -43,7 +42,7 @@ const AccountButton: React.FC = () => {
 
           <ModalBody>
             <MetaMaskCard onConnect={handleConnect} />
-            <WalletConnectCard onConnect={handleConnect} />
+            {/* <WalletConnectCard onConnect={handleConnect} /> */}
           </ModalBody>
 
           <ModalFooter>
