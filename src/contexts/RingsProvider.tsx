@@ -93,6 +93,13 @@ const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE'
 const ACTIVE_CHAT = 'ACTIVE_CHAT'
 const END_CHAT = 'END_CHAT'
 
+function hexToBytes(hex: number | string) {
+  hex = hex.toString(16)
+  hex = hex.replace(/^0x/i, '')
+  for (var bytes : number[] = [], c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.slice(c, c + 2), 16))
+  return bytes
+}
+
 const reducer = (state: StateProps, { type, payload }: { type: string, payload: any } ) => {
   console.log('reducer', type, payload)
   switch (type) {
@@ -342,17 +349,7 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       debug(process.env.NODE_ENV !== 'development')
       setStatus('connecting')
 
-      const unsignedInfo = new UnsignedInfo(account);
-      // @ts-ignore
-      const signer = provider.getSigner(account);
-      const signed = await signer.signMessage(unsignedInfo.auth);
-      const sig = new Uint8Array(web3.utils.hexToBytes(signed));
-
-      const client = await Client.new_client(unsignedInfo, sig, turnUrl);
-      setClient(client)
-
-      const callback = new MessageCallbackInstance(
-        async (response: any, message: any) => {
+      const callback = async (ctxRef:any, providerRef: any, msgCtx: any, response: any, message: any) => {
           // console.group('on custom message')
           const { relay } = response
           // console.log(`relay`, relay)
@@ -367,22 +364,40 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           dispatch({ type: RECEIVE_MESSAGE, payload: { peer: from, message: { from, to, message: new TextDecoder().decode(message) } } })
           // console.log(chats.get(from))
           // console.groupEnd()
-        }, async (
-          relay: any, prev: String,
-      ) => {
-        // console.group('on builtin message')
-        // console.log(relay)
-        // console.log(prev)
-        // console.groupEnd()
-      },
+      }
+
+      // signer
+      const signer = async (proof: string): Promise<Uint8Array> => {
+	console.log("in signer", provider)
+	const providerSigner = provider.getSigner(account);
+        const signed = await providerSigner.signMessage(proof)
+        return new Uint8Array(hexToBytes(signed!));
+      }
+      // default behaviour
+      const behaviour = new BackendBehaviour()
+      behaviour.on("PlainText", callback)
+      console.log("init client")
+      const client: Provider = await new Provider(
+	// ice servers
+	turnUrl,
+	// stable timeout
+        BigInt(1),
+	// account
+	account,
+	// account type
+	"eip191",
+	// signer
+	signer,
+	// callback
+	behaviour
       )
+      setClient(client)
+      await client.listen()
 
-      await client.listen(callback)
-
-      const promises = nodeUrl.split(';').map(async (url: string) =>
-        await client.connect_peer_via_http(nodeUrl)
-      )
-
+      /* const promises = nodeUrl.split(';').map(async (url: string) =>
+       *   await client.connect_peer_via_http(nodeUrl)
+       * )
+       */
       try {
         await Promise.any(promises)
       } catch (e) {
