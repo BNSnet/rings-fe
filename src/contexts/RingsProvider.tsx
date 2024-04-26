@@ -368,7 +368,6 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       // signer
       const signer = async (proof: string): Promise<Uint8Array> => {
-	console.log("in signer", provider)
 	const providerSigner = provider.getSigner(account);
         const signed = await providerSigner.signMessage(proof)
         return new Uint8Array(hexToBytes(signed!));
@@ -376,7 +375,6 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       // default behaviour
       const behaviour = new BackendBehaviour()
       behaviour.on("PlainText", callback)
-      console.log("init client")
       const client: Provider = await new Provider(
 	// ice servers
 	turnUrl,
@@ -394,10 +392,12 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       setClient(client)
       await client.listen()
 
-      /* const promises = nodeUrl.split(';').map(async (url: string) =>
-       *   await client.connect_peer_via_http(nodeUrl)
-       * )
-       */
+      const promises = nodeUrl.split(';').map(async (url: string) =>
+	// only connect first
+        const cpr = new rings_node.ConnectPeerViaHttpRequest({url:nodeUrl[0]})
+        const cprRes:rings_node.ConnectPeerViaHttpResponse = await provider.request("connectPeerViaHttp", cpr)
+      )
+
       try {
         await Promise.any(promises)
       } catch (e) {
