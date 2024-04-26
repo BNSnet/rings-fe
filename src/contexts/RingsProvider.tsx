@@ -270,27 +270,27 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     }
   }, [client])
 
-  const createOffer = useCallback(async () => {
+  const createOffer = useCallback(async (address: string) => {
     if (client) {
-      const offer = await client.create_offer()
-
-      return offer
+      const cor = new rings_node.CreateOfferRequest({ did: address })
+      const res: rings_node.CreateOfferResponse = await client.request("createOffer", cor)
+      return res.offer
     }
   }, [client])
 
   const answerOffer = useCallback(async (offer: any) => {
     if (client && offer) {
-      const answer = await client.answer_offer(offer)
-
-      return answer
+      const aor = new rings_node.AnswerOfferRequest({ offer: corResponse.offer })
+      const res: rings_node.AnswerOfferResponse = await client.request("answerOffer", aor)
+      return res.answer
     }
   }, [client])
 
   const acceptAnswer = useCallback(async (transportId: any, answer: any) => {
     if (client && transportId) {
-      const result = await client.accept_answer(transportId, answer)
-
-      return result
+      const aar = new rings_node.AcceptAnswerRequest({ answer: aorResponse.answer })
+      const res = await client.request("acceptAnswer", aar)
+      return res
     }
   }, [client])
 

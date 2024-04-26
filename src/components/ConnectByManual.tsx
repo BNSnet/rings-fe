@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 import { TransportAndIce } from '@ringsnetwork/rings-node';
 
-import { 
-  Box, 
-  Button, 
+import {
+  Box,
+  Button,
   Text,
   Modal,
   ModalOverlay,
@@ -14,8 +14,10 @@ import {
   ModalCloseButton,
   useDisclosure,
   Center,
+  VStack,
   Tabs, TabList, TabPanels, Tab, TabPanel,
   Textarea,
+  Input
 } from '@chakra-ui/react'
 
 import useRings from '../hooks/useRings';
@@ -30,6 +32,7 @@ const ConnectByManual: React.FC = () => {
   const [offer, setOffer] = useState<TransportAndIce | null>(null)
 
   const [ice, setIce] = useState('')
+  const [offerTarget, setOfferTarget] = useState('')
   const [answer, setAnswer] = useState<TransportAndIce | null>(null)
   const [acceptAnswer, setAcceptAnswer] = useState('')
 
@@ -38,17 +41,21 @@ const ConnectByManual: React.FC = () => {
   const [answerLoading, setAnswerLoading] = useState(false)
 
   const handleCreateOffer = useCallback(async () => {
-    try {
-      setOfferLoading(true)
-      const offer = await createOffer()
-      //@ts-ignore
-      setOffer(offer)
-      setOfferLoading(false)
-    } catch (e) {
-      console.error(e)
-      setOfferLoading(false)
+    if(offerTarget) {
+      try {
+	setOfferLoading(true)
+	const offer = await createOffer(offerTarget)
+	//@ts-ignore
+	setOffer(offer)
+	setOfferLoading(false)
+      } catch (e) {
+	console.error(e)
+	setOfferLoading(false)
+      }
+    } else {
+      console.error("need target did")
     }
-  }, [createOffer])
+  }, [createOffer, offerTarget])
 
   const handleAnswerOffer = useCallback(async () => {
     if (ice) {
@@ -59,7 +66,7 @@ const ConnectByManual: React.FC = () => {
         //@ts-ignore
         setAnswer(answer)
         setAnswerLoading(false)
-        fetchPeers() 
+        fetchPeers()
       } catch (e) {
         console.error(e)
         setAnswerLoading(false)
@@ -99,7 +106,7 @@ const ConnectByManual: React.FC = () => {
     <>
       <Box cursor="pointer" onClick={onOpen}>Manually Connect</Box>
 
-      <Modal isOpen={isOpen} onClose={handleClose} isCentered> 
+      <Modal isOpen={isOpen} onClose={handleClose} isCentered>
         <ModalOverlay />
 
         <ModalContent>
@@ -120,10 +127,12 @@ const ConnectByManual: React.FC = () => {
                     <Box>
                       <Textarea fontSize={10} isReadOnly size="lg" value={offer && offer.ice ? offer.ice : ''} />
                       <Box mt="15px">
-                        <Center>
+                        <VStack>
+			  <label style={{ textAlign: 'left', width: '100%' }}>Target Did: </label>
+			  <Input fontSize={10}  onChange={({target: {value}}) => { setOfferTarget(value) }} />
                           <Button isLoading={offerLoading} onClick={handleCreateOffer}>Create Offer</Button>
                           <CopyButton ml="15px" code={offer && offer.ice ? offer.ice : ''} />
-                        </Center>
+                        </VStack>
                       </Box>
                     </Box>
 
@@ -177,4 +186,3 @@ const ConnectByManual: React.FC = () => {
 }
 
 export default ConnectByManual
-
