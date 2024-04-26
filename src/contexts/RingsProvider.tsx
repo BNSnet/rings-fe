@@ -27,7 +27,7 @@ interface RingsContext {
   connectByAddress: (address: string) => Promise<void>,
   createOffer: () => Promise<void>,
   answerOffer: (offer: any) => Promise<void>,
-  acceptAnswer: (transportId: any, answer: any) => Promise<void>,
+  acceptAnswer: (answer: any) => Promise<void>,
   turnUrl: string,
   setTurnUrl: (turnUrl: string) => void,
   nodeUrl: string,
@@ -280,15 +280,15 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const answerOffer = useCallback(async (offer: any) => {
     if (client && offer) {
-      const aor = new rings_node.AnswerOfferRequest({ offer: corResponse.offer })
+      const aor = new rings_node.AnswerOfferRequest({ offer: offer })
       const res: rings_node.AnswerOfferResponse = await client.request("answerOffer", aor)
       return res.answer
     }
   }, [client])
 
-  const acceptAnswer = useCallback(async (transportId: any, answer: any) => {
-    if (client && transportId) {
-      const aar = new rings_node.AcceptAnswerRequest({ answer: aorResponse.answer })
+  const acceptAnswer = useCallback(async (answer: any) => {
+    if (client) {
+      const aar = new rings_node.AcceptAnswerRequest({ answer: answer })
       const res = await client.request("acceptAnswer", aar)
       return res
     }

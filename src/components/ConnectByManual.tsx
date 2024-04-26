@@ -75,10 +75,10 @@ const ConnectByManual: React.FC = () => {
   }, [ice, fetchPeers, answerOffer])
 
   const handleAcceptAnswer = useCallback(async () => {
-    if (offer && offer.transport_id) {
+    if (offer && acceptAnswer) {
       try {
         setAcceptLoading(true)
-        await acceptOfferAnswer(offer.transport_id, acceptAnswer)
+        await acceptOfferAnswer(acceptAnswer)
 
         setAcceptLoading(false)
         onClose()
@@ -125,13 +125,13 @@ const ConnectByManual: React.FC = () => {
                 <TabPanel>
                   <Box minH="340px">
                     <Box>
-                      <Textarea fontSize={10} isReadOnly size="lg" value={offer && offer.ice ? offer.ice : ''} />
+                      <Textarea fontSize={10} isReadOnly size="lg" value={offer ? offer : ''} />
                       <Box mt="15px">
                         <VStack>
 			  <label style={{ textAlign: 'left', width: '100%' }}>Target Did: </label>
 			  <Input fontSize={10}  onChange={({target: {value}}) => { setOfferTarget(value) }} />
                           <Button isLoading={offerLoading} onClick={handleCreateOffer}>Create Offer</Button>
-                          <CopyButton ml="15px" code={offer && offer.ice ? offer.ice : ''} />
+                          <CopyButton ml="15px" code={offer ? offer: ''} />
                         </VStack>
                       </Box>
                     </Box>
@@ -159,12 +159,12 @@ const ConnectByManual: React.FC = () => {
                     </Box>
 
                     {
-                      answer && answer.ice ?
+                      answer ?
                       <Box mt="40px">
-                        <Textarea fontSize={10} isReadOnly value={answer && answer.ice ? answer.ice : ''} />
+                        <Textarea fontSize={10} isReadOnly value={answer ? answer: ''} />
                         <Box mt="15px">
                           <Center>
-                            <CopyButton code={answer.ice} />
+                            <CopyButton code={answer} />
                           </Center>
                         </Box>
                       </Box> :
