@@ -116,9 +116,9 @@ const reducer = (state: StateProps, { type, payload }: { type: string, payload: 
           state: 'disconnected',
         }
       })
-
-      payload.peers.forEach(({ address, ...rest }: Peer) => {
-        const _address = address.startsWith(`0x`) ? address.toLowerCase() : `0x${address}`.toLowerCase()
+      console.log(payload)
+      payload.peers.forEach(({ did, ...rest }: Peer) => {
+        const _address = did.startsWith(`0x`) ? did.toLowerCase() : `0x${did}`.toLowerCase()
 
         if (!state.peerMap[_address]) {
             peerMap[_address] = {
@@ -205,6 +205,7 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const [turnUrl, setTurnUrl] = useState('')
   const [nodeUrl, setNodeUrl] = useState('')
+  const [nodeInfo, setNodeInfo] = useState<rings_node.INodeInfoResponse|null>(null)
 
   const [status, setStatus] = useState<string>('disconnected')
 
@@ -215,8 +216,8 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const fetchPeers = useCallback(async () => {
     if (client && status === 'connected') {
-      const peers = await client.list_peers()
-
+      const info:rings_node.INodeInfoResponse = await client.request("nodeInfo", [])
+      const peers = info?.swarm?.peers
       dispatch({ type: FETCH_PEERS, payload: { peers } })
     }
   }, [client, status])
@@ -394,8 +395,7 @@ const RingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       const promises = nodeUrl.split(';').map(async (url: string) =>
 	// only connect first
-        const cpr = new rings_node.ConnectPeerViaHttpRequest({url:nodeUrl[0]})
-        const cprRes:rings_node.ConnectPeerViaHttpResponse = await provider.request("connectPeerViaHttp", cpr)
+        client.request("connectPeerViaHttp", new rings_node.ConnectPeerViaHttpRequest({url:url}))
       )
 
       try {
